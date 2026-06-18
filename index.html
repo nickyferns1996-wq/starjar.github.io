@@ -285,6 +285,22 @@ body {
   line-height: 2;
   opacity: 0.85;
 }
+  .opened-list {
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-height: 220px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.hidden {
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -327,6 +343,11 @@ Open when you need luck, distraction, or both.
   </div>
 
   <div id="finalMsg"></div>
+  <button class="close-btn" onclick="toggleOpenedList()" style="margin-top:10px;">
+  View opened stars
+</button>
+
+<div id="openedList" class="opened-list hidden"></div>
 </div>
 
 <script>
@@ -627,6 +648,7 @@ function openStar(i) {
   playChime();
   launchConfetti();
   render();
+  renderOpenedList();
 }
 
 function closeCard() {
@@ -636,7 +658,30 @@ function closeCard() {
 document.getElementById("overlay").addEventListener("click", function(e) {
   if (e.target === this) closeCard();
 });
+function toggleOpenedList() {
+  const el = document.getElementById("openedList");
+  el.classList.toggle("hidden");
+  renderOpenedList();
+}
 
+function renderOpenedList() {
+  const el = document.getElementById("openedList");
+
+  if (opened.length === 0) {
+    el.innerHTML = "No stars opened yet.";
+    return;
+  }
+
+  el.innerHTML = opened
+    .sort((a, b) => a - b)
+    .map(i => `
+      <div style="margin-bottom:12px;">
+        <div style="opacity:0.7;">Star ${i + 1}</div>
+        <div style="margin-top:4px;">“${fortunes[i]}”</div>
+      </div>
+    `)
+    .join("");
+}
 render();
 </script>
 </body>
