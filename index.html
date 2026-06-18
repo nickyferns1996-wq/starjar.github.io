@@ -9,33 +9,21 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 35%, #020617 100%);
+  background: radial-gradient(circle at 50% 0%, #1e3a8a 0%, #0f172a 40%, #020617 100%);
   min-height: 100vh;
   color: white;
   overflow-x: hidden;
 }
 
-.stars-bg {
+/* ── Background canvas ── */
+#bgCanvas {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
 }
 
-.twinkle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: white;
-  border-radius: 50%;
-  animation: twinkle 4s infinite;
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: .15 }
-  50% { opacity: .9 }
-}
-
+/* ── Layout ── */
 .container {
   position: relative;
   z-index: 1;
@@ -46,28 +34,42 @@ body {
 }
 
 .title {
-  font-size: 2.6rem;
+  font-size: 2.8rem;
   font-weight: 700;
   letter-spacing: -0.5px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  animation: fadeDown 0.8s ease both;
 }
 
 .subtitle {
   opacity: 0.5;
   font-size: 0.95rem;
   margin-bottom: 36px;
+  animation: fadeDown 0.8s 0.15s ease both;
 }
 
-/* JAR */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Jar ── */
 .jar-wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 28px;
+  animation: fadeDown 0.8s 0.25s ease both;
 }
 
 .jar {
   position: relative;
   width: 260px;
+  filter: drop-shadow(0 0 40px rgba(99,120,255,0.25));
+  transition: filter 0.3s;
+}
+
+.jar:hover {
+  filter: drop-shadow(0 0 60px rgba(140,150,255,0.45));
 }
 
 .jar-lid {
@@ -77,25 +79,40 @@ body {
   margin: 0 auto -2px;
   border-radius: 10px 10px 4px 4px;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+}
+
+.jar:hover .jar-lid {
+  transform: translateY(-6px) rotate(-3deg);
 }
 
 .jar-body {
   width: 260px;
   height: 300px;
-  border: 3px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255,255,255,0.25);
   background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(10px);
   border-radius: 36px;
   overflow: hidden;
   position: relative;
 }
 
-/* Stars grid inside jar */
+/* inner glow */
+.jar-body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 34px;
+  box-shadow: inset 0 0 40px rgba(100,120,255,0.08);
+  pointer-events: none;
+}
+
+/* ── Stars grid ── */
 .stars-grid {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 6px;
+  gap: 5px;
   padding: 14px;
   height: 100%;
   overflow: hidden;
@@ -105,25 +122,44 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 19px;
   line-height: 1;
-  padding: 2px;
-  border-radius: 4px;
-  transition: transform 0.15s, opacity 0.15s;
+  padding: 3px;
+  border-radius: 6px;
+  transition: transform 0.15s, filter 0.15s;
   position: relative;
+  animation: starEntry 0.4s ease both;
+}
+
+@keyframes starEntry {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .star-btn:hover:not(.opened) {
-  transform: scale(1.3);
+  transform: scale(1.4) rotate(15deg);
+  filter: drop-shadow(0 0 6px gold);
+  z-index: 2;
 }
 
 .star-btn.opened {
-  opacity: 0.18;
+  opacity: 0.15;
   cursor: default;
   filter: grayscale(1);
 }
 
-/* Progress */
+/* wiggle on jar hover for unopened stars */
+.jar:hover .star-btn:not(.opened) {
+  animation: wiggle 0.5s ease infinite alternate;
+  animation-delay: calc(var(--i) * 30ms);
+}
+
+@keyframes wiggle {
+  from { transform: rotate(-5deg) translateY(0px); }
+  to   { transform: rotate(5deg) translateY(-3px); }
+}
+
+/* ── Progress ── */
 .progress-row {
   display: flex;
   justify-content: center;
@@ -132,31 +168,33 @@ body {
   margin-bottom: 28px;
   font-size: 0.9rem;
   opacity: 0.7;
+  animation: fadeDown 0.8s 0.35s ease both;
 }
 
 .progress-bar-wrap {
   width: 160px;
   height: 4px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   border-radius: 99px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: white;
+  background: linear-gradient(90deg, #818cf8, #c7d2fe);
   border-radius: 99px;
-  transition: width 0.4s ease;
+  transition: width 0.6s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 0 8px rgba(129,140,248,0.6);
 }
 
-/* Fortune modal overlay */
+/* ── Overlay ── */
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(2, 6, 23, 0.75);
-  backdrop-filter: blur(6px);
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(8px);
   align-items: center;
   justify-content: center;
 }
@@ -166,62 +204,84 @@ body {
 }
 
 .fortune-card {
-  background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(15,23,42,0.95));
+  background: linear-gradient(135deg, rgba(30,58,138,0.92), rgba(15,23,42,0.97));
   border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 24px;
-  padding: 44px 40px;
+  border-radius: 28px;
+  padding: 48px 42px;
   max-width: 420px;
   width: 90%;
   text-align: center;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-  animation: popIn 0.25s ease;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(99,120,255,0.15);
+  animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
 }
 
 @keyframes popIn {
-  from { transform: scale(0.88); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from { transform: scale(0.75) rotate(-3deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);     opacity: 1; }
 }
 
 .fortune-star-num {
-  font-size: 0.8rem;
-  letter-spacing: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  opacity: 0.45;
-  margin-bottom: 20px;
+  opacity: 0.4;
+  margin-bottom: 22px;
 }
 
 .fortune-emoji {
-  font-size: 3rem;
-  margin-bottom: 20px;
+  font-size: 3.5rem;
   display: block;
+  margin-bottom: 20px;
+  animation: spinIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.1s both;
+}
+
+@keyframes spinIn {
+  from { transform: rotate(-180deg) scale(0); opacity: 0; }
+  to   { transform: rotate(0deg) scale(1);    opacity: 1; }
 }
 
 .fortune-text {
-  font-size: 1.25rem;
-  line-height: 1.75;
+  font-size: 1.2rem;
+  line-height: 1.8;
   font-weight: 400;
+  animation: fadeUp 0.4s ease 0.2s both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .close-btn {
   margin-top: 32px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
   color: white;
-  padding: 10px 28px;
+  padding: 10px 30px;
   border-radius: 99px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
+  animation: fadeUp 0.4s ease 0.3s both;
 }
 
 .close-btn:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.16);
+  transform: scale(1.05);
 }
 
-/* Final screen */
+/* ── Confetti canvas ── */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* ── Final ── */
 .final {
   margin-top: 20px;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 2;
   opacity: 0.85;
 }
@@ -229,12 +289,13 @@ body {
 </head>
 <body>
 
-<div class="stars-bg" id="starsBg"></div>
+<canvas id="bgCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
 
 <div class="overlay" id="overlay">
   <div class="fortune-card">
     <div class="fortune-star-num" id="fortuneNum"></div>
-    <span class="fortune-emoji">⭐</span>
+    <span class="fortune-emoji" id="fortuneEmoji">⭐</span>
     <div class="fortune-text" id="fortuneText"></div>
     <button class="close-btn" onclick="closeCard()">Close</button>
   </div>
@@ -245,7 +306,7 @@ body {
   <p class="subtitle">One for each day. Open when you're ready.</p>
 
   <div class="jar-wrapper">
-    <div class="jar">
+    <div class="jar" id="jar">
       <div class="jar-lid"></div>
       <div class="jar-body">
         <div class="stars-grid" id="starsGrid"></div>
@@ -265,6 +326,7 @@ body {
 </div>
 
 <script>
+// ── Fortunes ──────────────────────────────────────────────
 const fortunes = [
   "Something small will change your whole day.",
   "You are closer than you think.",
@@ -287,7 +349,7 @@ const fortunes = [
   "Trust the slow version of this.",
   "You are enough, exactly as you are right now.",
   "The right thing will reveal itself.",
-  "Let yourself enjoy this, it's allowed.",
+  "Let yourself enjoy this — it's allowed.",
   "You've grown more than you've noticed.",
   "This difficulty is temporary.",
   "Someone is grateful for you today.",
@@ -365,23 +427,157 @@ const fortunes = [
   "Something wonderful is ordinary to you now.",
   "You are making someone's world better.",
   "This one's just for you: you're doing great.",
-  "100 stars. You made it here."
+  "100 stars. You made it here. ✨"
 ];
 
+const starEmojis = ["⭐","🌟","✨","💫","🌠"];
+
+// ── State ─────────────────────────────────────────────────
 let opened = JSON.parse(localStorage.getItem("openedStars") || "[]");
 
-// Background twinkles
-const bg = document.getElementById("starsBg");
-for (let i = 0; i < 70; i++) {
-  const s = document.createElement("div");
-  s.className = "twinkle";
-  s.style.top = Math.random() * 100 + "vh";
-  s.style.left = Math.random() * 100 + "vw";
-  s.style.animationDelay = Math.random() * 4 + "s";
-  s.style.animationDuration = (3 + Math.random() * 3) + "s";
-  bg.appendChild(s);
+// ── Background: twinkling stars + shooting stars ──────────
+const bgCanvas = document.getElementById("bgCanvas");
+const bgCtx = bgCanvas.getContext("2d");
+
+let bgW, bgH;
+function resizeBg() {
+  bgW = bgCanvas.width  = window.innerWidth;
+  bgH = bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener("resize", resizeBg);
+
+const bgStars = Array.from({length: 120}, () => ({
+  x: Math.random(),
+  y: Math.random(),
+  r: Math.random() * 1.2 + 0.3,
+  phase: Math.random() * Math.PI * 2,
+  speed: Math.random() * 0.02 + 0.005
+}));
+
+const shootingStars = [];
+function spawnShooting() {
+  shootingStars.push({
+    x: Math.random() * bgW,
+    y: Math.random() * bgH * 0.5,
+    len: 80 + Math.random() * 80,
+    speed: 6 + Math.random() * 6,
+    alpha: 1,
+    angle: Math.PI / 5
+  });
+}
+setInterval(spawnShooting, 3000 + Math.random() * 4000);
+
+let t = 0;
+function drawBg() {
+  bgCtx.clearRect(0, 0, bgW, bgH);
+  t += 0.012;
+
+  bgStars.forEach(s => {
+    const alpha = 0.2 + 0.7 * (0.5 + 0.5 * Math.sin(s.phase + t * s.speed * 5));
+    bgCtx.beginPath();
+    bgCtx.arc(s.x * bgW, s.y * bgH, s.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = `rgba(255,255,255,${alpha})`;
+    bgCtx.fill();
+  });
+
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const ss = shootingStars[i];
+    const grad = bgCtx.createLinearGradient(
+      ss.x, ss.y,
+      ss.x - Math.cos(ss.angle) * ss.len,
+      ss.y - Math.sin(ss.angle) * ss.len
+    );
+    grad.addColorStop(0, `rgba(255,255,255,${ss.alpha})`);
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    bgCtx.beginPath();
+    bgCtx.strokeStyle = grad;
+    bgCtx.lineWidth = 1.5;
+    bgCtx.moveTo(ss.x, ss.y);
+    bgCtx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+    bgCtx.stroke();
+    ss.x += Math.cos(ss.angle) * ss.speed;
+    ss.y += Math.sin(ss.angle) * ss.speed;
+    ss.alpha -= 0.018;
+    if (ss.alpha <= 0) shootingStars.splice(i, 1);
+  }
+
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── Confetti ──────────────────────────────────────────────
+const confCanvas = document.getElementById("confettiCanvas");
+const confCtx = confCanvas.getContext("2d");
+confCanvas.width  = window.innerWidth;
+confCanvas.height = window.innerHeight;
+window.addEventListener("resize", () => {
+  confCanvas.width  = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+});
+
+let particles = [];
+function launchConfetti() {
+  const colors = ["#fbbf24","#818cf8","#34d399","#f472b6","#60a5fa","#fff"];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      vx: (Math.random() - 0.5) * 14,
+      vy: (Math.random() - 1.5) * 12,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      r: 4 + Math.random() * 4,
+      alpha: 1,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.2
+    });
+  }
+  animateConfetti();
 }
 
+function animateConfetti() {
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  particles.forEach((p, i) => {
+    p.x  += p.vx;
+    p.y  += p.vy;
+    p.vy += 0.35;
+    p.alpha -= 0.018;
+    p.rot += p.rotSpeed;
+    confCtx.save();
+    confCtx.globalAlpha = Math.max(0, p.alpha);
+    confCtx.translate(p.x, p.y);
+    confCtx.rotate(p.rot);
+    confCtx.fillStyle = p.color;
+    confCtx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+    confCtx.restore();
+  });
+  particles = particles.filter(p => p.alpha > 0);
+  if (particles.length > 0) requestAnimationFrame(animateConfetti);
+}
+
+// ── Sound: soft chime via Web Audio ──────────────────────
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99]; // C5 E5 G5
+    notes.forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.18, start + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.8);
+      osc.start(start);
+      osc.stop(start + 0.8);
+    });
+  } catch(e) {}
+}
+
+// ── Render ────────────────────────────────────────────────
 function render() {
   const grid = document.getElementById("starsGrid");
   grid.innerHTML = "";
@@ -390,6 +586,8 @@ function render() {
     const btn = document.createElement("button");
     btn.className = "star-btn" + (opened.includes(i) ? " opened" : "");
     btn.innerHTML = "⭐";
+    btn.style.setProperty("--i", i);
+    btn.style.animationDelay = (i * 8) + "ms";
     btn.title = opened.includes(i) ? `Star ${i+1} — opened` : `Open star ${i+1}`;
     if (!opened.includes(i)) {
       btn.onclick = () => openStar(i);
@@ -405,7 +603,7 @@ function render() {
   if (opened.length === 100) {
     document.getElementById("finalMsg").innerHTML = `
       <div class="final">
-        You've opened every star.<br>
+        You've opened every star. ✨<br>
         You don't need more wishes now.<br>
         You already collected them all.
       </div>`;
@@ -418,9 +616,12 @@ function openStar(i) {
   localStorage.setItem("openedStars", JSON.stringify(opened));
 
   document.getElementById("fortuneNum").textContent = `Star ${i + 1} of 100`;
+  document.getElementById("fortuneEmoji").textContent = starEmojis[i % starEmojis.length];
   document.getElementById("fortuneText").textContent = fortunes[i];
   document.getElementById("overlay").classList.add("visible");
 
+  playChime();
+  launchConfetti();
   render();
 }
 
@@ -428,7 +629,6 @@ function closeCard() {
   document.getElementById("overlay").classList.remove("visible");
 }
 
-// Close on overlay background click
 document.getElementById("overlay").addEventListener("click", function(e) {
   if (e.target === this) closeCard();
 });
