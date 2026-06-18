@@ -301,6 +301,50 @@ body {
 .hidden {
   display: none;
 }
+  .intro-envelope {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.envelope {
+  width: 220px;
+  height: 140px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.envelope:hover {
+  transform: scale(1.05);
+}
+
+.flap {
+  font-size: 2.5rem;
+}
+
+.label {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.letter {
+  margin-top: 20px;
+  max-width: 600px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 20px;
+  border-radius: 14px;
+  line-height: 1.6;
+}
 </style>
 </head>
 <body>
@@ -320,10 +364,34 @@ body {
 <div class="container">
 <h1 class="title">✦ 100 Stars</h1>
 
-<p class="subtitle">
-A jar full of tiny folded stars and questionable decisions.<br>
-Open when you need luck, distraction, or both.
-</p>
+<div id="introEnvelope" class="intro-envelope">
+  <div class="envelope" onclick="openEnvelope()">
+    <div class="flap">✉️</div>
+    <div class="label">Tap to open your message</div>
+  </div>
+
+  <div id="letter" class="letter hidden">
+    <h2>🎁 Happy 30th!</h2>
+
+    <p>
+      Welcome to your digital backup. This space contains roughly 500 virtual origami stars, because apparently I had both the time, the coding commitment, and the absolute lack of supervision to make this happen.
+      <br><br>
+
+      Hidden inside 100 of these stars are messages, fortunes, wishes, questionable advice, and undeniable evidence of my mental decline.
+      <br><br>
+
+      ⚠️ Limitations (digital version):<br><br>
+
+      Progress is saved only in your current browser.<br>
+      If you switch devices or clear browser data, your opened stars will reset.<br>
+      There is no account or cloud sync in this version.<br>
+      Each star opens independently; there is no “undo” for opened stars.<br>
+      You can still view previously opened stars on this device.
+    </p>
+
+    <button class="close-btn" onclick="enterStars()">Continue to stars ✨</button>
+  </div>
+</div>
 
   <div class="jar-wrapper">
     <div class="jar" id="jar">
@@ -683,6 +751,14 @@ function renderOpenedList() {
     .join("");
 }
 render();
+  function openEnvelope() {
+  document.querySelector(".envelope").style.display = "none";
+  document.getElementById("letter").classList.remove("hidden");
+}
+
+function enterStars() {
+  document.getElementById("introEnvelope").style.display = "none";
+}
 </script>
 </body>
 </html>
