@@ -4,332 +4,436 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>100 Stars</title>
-
 <style>
+* { margin:0; padding:0; box-sizing:border-box; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 35%, #020617 100%);
+  min-height: 100vh;
+  color: white;
+  overflow-x: hidden;
 }
 
-body{
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-background:
-radial-gradient(circle at top,#1e3a8a 0%,#0f172a 35%,#020617 100%);
-min-height:100vh;
-color:white;
-overflow-x:hidden;
+.stars-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.stars-bg{
-position:fixed;
-inset:0;
-pointer-events:none;
+.twinkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 4s infinite;
 }
 
-.twinkle{
-position:absolute;
-width:3px;
-height:3px;
-background:white;
-border-radius:50%;
-opacity:.6;
-animation:twinkle 4s infinite;
+@keyframes twinkle {
+  0%, 100% { opacity: .15 }
+  50% { opacity: .9 }
 }
 
-@keyframes twinkle{
-0%,100%{opacity:.2}
-50%{opacity:1}
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: auto;
+  padding: 40px 20px 80px;
+  text-align: center;
 }
 
-.container{
-max-width:900px;
-margin:auto;
-padding:40px 20px;
-text-align:center;
+.title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
 }
 
-.title{
-font-size:3rem;
-font-weight:700;
-margin-bottom:20px;
+.subtitle {
+  opacity: 0.5;
+  font-size: 0.95rem;
+  margin-bottom: 36px;
 }
 
-.note{
-background:rgba(255,255,255,.08);
-border:1px solid rgba(255,255,255,.1);
-backdrop-filter:blur(10px);
-padding:25px;
-border-radius:20px;
-line-height:1.9;
-max-width:650px;
-margin:0 auto 40px;
+/* JAR */
+.jar-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
 }
 
-.jar-wrapper{
-display:flex;
-justify-content:center;
-margin-top:20px;
-margin-bottom:20px;
+.jar {
+  position: relative;
+  width: 260px;
 }
 
-.jar{
-position:relative;
-width:280px;
-height:380px;
-cursor:pointer;
-transition:.3s;
+.jar-lid {
+  width: 110px;
+  height: 34px;
+  background: linear-gradient(180deg, #94a3b8, #64748b);
+  margin: 0 auto -2px;
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
 }
 
-.jar:hover{
-transform:translateY(-5px);
+.jar-body {
+  width: 260px;
+  height: 300px;
+  border: 3px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px);
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
 }
 
-.jar-top{
-width:120px;
-height:40px;
-background:#94a3b8;
-margin:auto;
-border-radius:12px 12px 4px 4px;
+/* Stars grid inside jar */
+.stars-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+  padding: 14px;
+  height: 100%;
+  overflow: hidden;
 }
 
-.jar-body{
-position:relative;
-width:280px;
-height:320px;
-margin:auto;
-border:4px solid rgba(255,255,255,.45);
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(8px);
-border-radius:40px;
-overflow:hidden;
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 4px;
+  transition: transform 0.15s, opacity 0.15s;
+  position: relative;
 }
 
-.paper-star{
-position:absolute;
-font-size:24px;
-animation:float 5s ease-in-out infinite;
+.star-btn:hover:not(.opened) {
+  transform: scale(1.3);
 }
 
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-8px)}
+.star-btn.opened {
+  opacity: 0.18;
+  cursor: default;
+  filter: grayscale(1);
 }
 
-.progress{
-margin-top:20px;
-font-size:1.1rem;
-opacity:.9;
+/* Progress */
+.progress-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  font-size: 0.9rem;
+  opacity: 0.7;
 }
 
-.remaining{
-margin-top:8px;
-opacity:.7;
+.progress-bar-wrap {
+  width: 160px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  overflow: hidden;
 }
 
-button{
-padding:14px 24px;
-border:none;
-border-radius:999px;
-font-size:16px;
-cursor:pointer;
-margin-top:20px;
+.progress-bar-fill {
+  height: 100%;
+  background: white;
+  border-radius: 99px;
+  transition: width 0.4s ease;
 }
 
-.primary{
-background:white;
-color:black;
-font-weight:600;
+/* Fortune modal overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(2, 6, 23, 0.75);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
 }
 
-.fortune-card{
-margin-top:30px;
-background:rgba(255,255,255,.08);
-border:1px solid rgba(255,255,255,.1);
-padding:25px;
-border-radius:20px;
-line-height:1.8;
-font-size:1.2rem;
+.overlay.visible {
+  display: flex;
 }
 
-.locked{
-margin-top:30px;
-padding:20px;
-background:rgba(255,255,255,.08);
-border-radius:16px;
+.fortune-card {
+  background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 24px;
+  padding: 44px 40px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  animation: popIn 0.25s ease;
 }
 
-.memory-box{
-max-width:800px;
-margin:60px auto;
-text-align:left;
+@keyframes popIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
 
-.memory-title{
-font-size:1.5rem;
-margin-bottom:20px;
+.fortune-star-num {
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin-bottom: 20px;
 }
 
-.memory-item{
-background:rgba(255,255,255,.06);
-padding:14px;
-border-radius:12px;
-margin-bottom:10px;
+.fortune-emoji {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
 }
 
-.final-screen{
-margin-top:40px;
-font-size:1.4rem;
-line-height:2;
+.fortune-text {
+  font-size: 1.25rem;
+  line-height: 1.75;
+  font-weight: 400;
 }
 
+.close-btn {
+  margin-top: 32px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 10px 28px;
+  border-radius: 99px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* Final screen */
+.final {
+  margin-top: 20px;
+  font-size: 1.15rem;
+  line-height: 2;
+  opacity: 0.85;
+}
 </style>
 </head>
-
 <body>
 
 <div class="stars-bg" id="starsBg"></div>
 
+<div class="overlay" id="overlay">
+  <div class="fortune-card">
+    <div class="fortune-star-num" id="fortuneNum"></div>
+    <span class="fortune-emoji">⭐</span>
+    <div class="fortune-text" id="fortuneText"></div>
+    <button class="close-btn" onclick="closeCard()">Close</button>
+  </div>
+</div>
+
 <div class="container">
+  <h1 class="title">✦ 100 Stars</h1>
+  <p class="subtitle">One for each day. Open when you're ready.</p>
 
-<h1 class="title">100 Stars</h1>
+  <div class="jar-wrapper">
+    <div class="jar">
+      <div class="jar-lid"></div>
+      <div class="jar-body">
+        <div class="stars-grid" id="starsGrid"></div>
+      </div>
+    </div>
+  </div>
 
-<div class="note">
+  <div class="progress-row">
+    <span id="progressText">0 / 100</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span id="remainingText">100 left</span>
+  </div>
 
-100 stars.<br><br>
-
-100 fortunes.<br><br>
-
-Open one each day.<br><br>
-
-Some are nonsense.<br>
-Some are reminders.<br>
-Some are surprisingly wise.<br><br>
-
-Take your time.
-
+  <div id="finalMsg"></div>
 </div>
 
-<div id="app"></div>
-
-<div class="memory-box" id="memoryBox"></div>
-
-</div>
 <script>
-const app = document.getElementById("app");
-const starsBg = document.getElementById("starsBg");
-const memoryBox = document.getElementById("memoryBox");
+const fortunes = [
+  "Something small will change your whole day.",
+  "You are closer than you think.",
+  "A quiet win is coming.",
+  "Let it be simple today.",
+  "Not everything needs a response.",
+  "You will understand later.",
+  "A good thing is on its way.",
+  "You already survived the hardest part.",
+  "Pause. You're rushing nothing.",
+  "This will make sense soon.",
+  "The effort counts, even when no one sees it.",
+  "You are allowed to change your mind.",
+  "Rest is part of the work.",
+  "You don't have to have it all figured out.",
+  "Something you've been waiting for is moving.",
+  "Be patient with yourself today.",
+  "You're doing better than you think.",
+  "A small act of kindness will come back to you.",
+  "Trust the slow version of this.",
+  "You are enough, exactly as you are right now.",
+  "The right thing will reveal itself.",
+  "Let yourself enjoy this, it's allowed.",
+  "You've grown more than you've noticed.",
+  "This difficulty is temporary.",
+  "Someone is grateful for you today.",
+  "You don't have to earn rest.",
+  "A door you'd forgotten about is about to open.",
+  "The story isn't over yet.",
+  "Your instincts are more right than you know.",
+  "You've made harder decisions than this.",
+  "Something good is quietly compounding.",
+  "You are more adaptable than you give yourself credit for.",
+  "The answer is closer than the question.",
+  "You handled something really well recently.",
+  "Let this one go. It wasn't yours anyway.",
+  "You'll look back on this and understand.",
+  "One conversation could change everything.",
+  "Clarity is coming. It takes the time it takes.",
+  "You are not behind. You are exactly where you are.",
+  "The small things you do matter more than you think.",
+  "Something you planted is about to bloom.",
+  "You've been braver lately than you've admitted.",
+  "It's okay to want what you want.",
+  "The right people are finding their way to you.",
+  "You are building something real.",
+  "Don't underestimate a good night's sleep.",
+  "Your presence matters in rooms you don't even notice.",
+  "A little more time is all this needs.",
+  "You already know what to do.",
+  "This is a chapter, not the whole story.",
+  "Something you said recently helped someone.",
+  "You are more seen than you feel.",
+  "Things are shifting in your favor.",
+  "Let yourself want good things without guilt.",
+  "You are not as stuck as it feels.",
+  "The next step is smaller than you think.",
+  "You've earned a moment of peace.",
+  "Something unexpected is going to delight you.",
+  "You are someone's reason for a better day.",
+  "Keep going. Quietly. It's working.",
+  "Your feelings are information, not verdicts.",
+  "This version of you is worth knowing.",
+  "The answer is yes. Ask the question.",
+  "You've done hard things before. This is one more.",
+  "Let joy in today, even a little bit.",
+  "You are capable of more than the last version of you knew.",
+  "Some things only make sense from a distance.",
+  "The right time is closer than the last time you checked.",
+  "You'll find what you're looking for.",
+  "Something is going right that you haven't noticed yet.",
+  "The hard part is almost done.",
+  "You are exactly the right person for your own life.",
+  "A small decision today will matter later.",
+  "You've been showing up. That counts.",
+  "Things don't have to be perfect to be good.",
+  "You are allowed to take up space.",
+  "Something old is making way for something new.",
+  "The timing is not against you.",
+  "Be kind to yourself today. You'd do it for anyone else.",
+  "You know more than you did. That's everything.",
+  "Somewhere, a coincidence is being arranged for you.",
+  "Your version of this is the right version.",
+  "Let the good surprise you.",
+  "You are in the middle of something important.",
+  "A small risk today could become a big yes.",
+  "Not all growth feels like progress while it's happening.",
+  "You are more resilient than yesterday.",
+  "The best part hasn't happened yet.",
+  "You are loved in ways you haven't counted.",
+  "Something you thought was over isn't done with you yet.",
+  "You are a whole person, not a to-do list.",
+  "Trust yourself. You've earned it.",
+  "Something is softening that was hard.",
+  "You are moving, even when it doesn't feel like it.",
+  "The right words will come when you need them.",
+  "You have more time than panic suggests.",
+  "Something wonderful is ordinary to you now.",
+  "You are making someone's world better.",
+  "This one's just for you: you're doing great.",
+  "100 stars. You made it here."
+];
 
-// 100 fortunes (you can replace/edit anytime)
-const fortunes = Array.from({length: 100}, (_, i) => {
-  const list = [
-    "Something small will change your whole day.",
-    "You are closer than you think.",
-    "A quiet win is coming.",
-    "Let it be simple today.",
-    "Not everything needs a response.",
-    "You will understand later.",
-    "A good thing is on its way.",
-    "You already survived the hardest part.",
-    "Pause. You’re rushing nothing.",
-    "This will make sense soon."
-  ];
-  return list[i % list.length];
-});
-
-// Load progress
 let opened = JSON.parse(localStorage.getItem("openedStars") || "[]");
 
-// Create background stars
-for (let i = 0; i < 80; i++) {
+// Background twinkles
+const bg = document.getElementById("starsBg");
+for (let i = 0; i < 70; i++) {
   const s = document.createElement("div");
   s.className = "twinkle";
   s.style.top = Math.random() * 100 + "vh";
   s.style.left = Math.random() * 100 + "vw";
   s.style.animationDelay = Math.random() * 4 + "s";
-  starsBg.appendChild(s);
+  s.style.animationDuration = (3 + Math.random() * 3) + "s";
+  bg.appendChild(s);
 }
 
-// Render jar UI
 function render() {
-  app.innerHTML = "";
+  const grid = document.getElementById("starsGrid");
+  grid.innerHTML = "";
 
-  const jar = document.createElement("div");
-  jar.className = "jar";
-
-  const top = document.createElement("div");
-  top.className = "jar-top";
-
-  const body = document.createElement("div");
-  body.className = "jar-body";
-
-  // stars inside jar
   for (let i = 0; i < 100; i++) {
-    const star = document.createElement("div");
-    star.className = "paper-star";
-    star.innerHTML = "⭐";
-
-    const isOpened = opened.includes(i);
-
-    star.style.top = Math.random() * 90 + "%";
-    star.style.left = Math.random() * 90 + "%";
-    star.style.opacity = isOpened ? 0.2 : 1;
-    star.style.transform = `scale(${isOpened ? 0.8 : 1})`;
-
-    star.onclick = () => openStar(i);
-
-    body.appendChild(star);
+    const btn = document.createElement("button");
+    btn.className = "star-btn" + (opened.includes(i) ? " opened" : "");
+    btn.innerHTML = "⭐";
+    btn.title = opened.includes(i) ? `Star ${i+1} — opened` : `Open star ${i+1}`;
+    if (!opened.includes(i)) {
+      btn.onclick = () => openStar(i);
+    }
+    grid.appendChild(btn);
   }
 
-  jar.appendChild(top);
-  jar.appendChild(body);
-
-  const progress = document.createElement("div");
-  progress.className = "progress";
-  progress.innerText = `${opened.length} / 100 opened`;
-
-  const remaining = document.createElement("div");
-  remaining.className = "remaining";
-  remaining.innerText = `${100 - opened.length} remaining`;
-
-  app.appendChild(jar);
-  app.appendChild(progress);
-  app.appendChild(remaining);
+  const pct = (opened.length / 100) * 100;
+  document.getElementById("progressText").textContent = `${opened.length} / 100`;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("remainingText").textContent = `${100 - opened.length} left`;
 
   if (opened.length === 100) {
-    showFinal();
+    document.getElementById("finalMsg").innerHTML = `
+      <div class="final">
+        You've opened every star.<br>
+        You don't need more wishes now.<br>
+        You already collected them all.
+      </div>`;
   }
 }
 
 function openStar(i) {
   if (opened.includes(i)) return;
-
   opened.push(i);
   localStorage.setItem("openedStars", JSON.stringify(opened));
 
-  const card = document.createElement("div");
-  card.className = "fortune-card";
-  card.innerHTML = `
-    ⭐ Fortune ${i + 1}<br><br>
-    ${fortunes[i]}
-  `;
-
-  app.appendChild(card);
+  document.getElementById("fortuneNum").textContent = `Star ${i + 1} of 100`;
+  document.getElementById("fortuneText").textContent = fortunes[i];
+  document.getElementById("overlay").classList.add("visible");
 
   render();
 }
 
-function showFinal() {
-  const final = document.createElement("div");
-  final.className = "final-screen";
-  final.innerHTML = `
-    You've opened every star.<br><br>
-    You don’t need more wishes now.<br>
-    You already collected them all.
-  `;
-  app.appendChild(final);
+function closeCard() {
+  document.getElementById("overlay").classList.remove("visible");
 }
+
+// Close on overlay background click
+document.getElementById("overlay").addEventListener("click", function(e) {
+  if (e.target === this) closeCard();
+});
 
 render();
 </script>
+</body>
+</html>
